@@ -3,8 +3,8 @@ from database import Database
 from settings import *
 
 
-class Inscription():
-    def __init__(self, window) -> None:
+class Inscription:
+    def __init__(self, window):
         self.win = window
         self.win.geometry('800x600')
         self.win.title('myDiscord')
@@ -139,44 +139,74 @@ class Inscription():
             self.confirmation_password.delete(0, 'end')
             self.confirmation_password.insert(0, 'Passwords are different !')
         else:
-            if self.check_validity_password(str(self.password.get())):
-                self.valid_password = self.password.get()
+            if self.check_validity_password(self.password.get()) and self.check_validity_email(self.email.get()):
                 columns_name = ("first_name", "last_name", "nickname", "email", "password")
-                valid_info = (self.valid_firstname, self.valid_lastname, self.valid_pseudo, self.email.get(), self.valid_password)
+                valid_info = (
+                    self.valid_firstname, self.valid_lastname, self.valid_pseudo, self.valid_email, self.valid_password)
                 self.database.insert_into_table("users", columns_name, valid_info)
                 print("Account created !!")
 
+    def check_validity_email(self, check):
+        self.database.my_cursor.execute("USE my_discord")
+        self.database.my_cursor.execute("SELECT email FROM users")
+        results = self.database.my_cursor.fetchall()
+        list_mail = []
+
+        for i in range(0, len(results)):
+            list_mail.append(results[i][0])
+
+        print(list_mail)
+
+        if str(self.email.get()) in list_mail:
+            self.email.delete(0, 'end')
+            self.email.insert(0, 'Email already used !')
+            return False
+        elif '@' not in check:
+            self.email.delete(0, 'end')
+            self.email.insert(0, 'Invalid email !')
+            return False
+        else:
+            self.valid_email = check.lower()
+            return self.valid_email
+
     def check_validity_password(self, check):
-        error_value = True
+        # error_value = True
         special_char = ['$', '@', '#', '%', '*', '&', '~', '§', '!', '?', '/', '>', '<', ',', ';', '.', ':', 'µ', '£']
 
         if len(check) < 8:
             self.password.delete(0, 'end')
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, '8 characters minimum !')
-            error_value = False
+            # error_value = False
+            return False
 
         elif not re.search("[A-Z]", check):
             self.password.delete(0, 'end')
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, 'Use uppercase also !')
-            error_value = False
+            # error_value = False
+            return False
 
         elif not re.search("[a-z]", check):
             self.password.delete(0, 'end')
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, 'Use lowercase also !')
-            error_value = False
+            # error_value = False
+            return False
 
         elif not re.search("[0-9]", check):
             self.password.delete(0, 'end')
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, 'Enter a digit !')
-            error_value = False
+            # error_value = False
+            return False
 
         elif not any(char in special_char for char in check):
             self.password.delete(0, 'end')
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, 'Where is the special character !?')
-            error_value = False
-        return error_value
+            # error_value = False
+            return False
+
+        self.valid_password = check
+        return self.valid_password

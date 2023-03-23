@@ -1,5 +1,7 @@
-from chatroom import Chatroom
+# from chatroom import Chatroom
+from database import Database
 from settings import *
+
 
 class Inscription():
     def __init__(self, window) -> None:
@@ -7,10 +9,11 @@ class Inscription():
         self.win.geometry('800x600')
         self.win.title('myDiscord')
 
+        self.database = Database()
+
         self.draw()
         self.bind_input()
         self.win.mainloop()
-        
 
     def draw(self):
         page_frame = ttk.Frame(self.win, width=800, height=600)
@@ -19,26 +22,26 @@ class Inscription():
         # Title : 
         title_frame = ttk.Frame(page_frame)
         title_frame.pack(padx=240, pady=100)
-        title = ttk.Label(title_frame, text ="Inscription", font=MEDIUM)
+        title = ttk.Label(title_frame, text="Inscription", font=MEDIUM)
         title.pack()
 
         # Input : 
         input_frame = ttk.Frame(self.win, width=800, height=300)
         input_frame.place(x=0, y=200)
 
-        self.lastname = ttk.Entry(input_frame, justify='center', width= 30)
-        self.firstname = ttk.Entry(input_frame, justify='center', width= 30)
-        self.email = ttk.Entry(input_frame, justify='center', width= 30)
-        self.pseudo = ttk.Entry(input_frame, justify='center', width= 30)
-        self.password = ttk.Entry(input_frame, justify='center', width= 30)
-        self.confirmation_password = ttk.Entry(input_frame, justify='center', width= 30)
+        self.lastname = ttk.Entry(input_frame, justify='center', width=30)
+        self.firstname = ttk.Entry(input_frame, justify='center', width=30)
+        self.email = ttk.Entry(input_frame, justify='center', width=30)
+        self.pseudo = ttk.Entry(input_frame, justify='center', width=30)
+        self.password = ttk.Entry(input_frame, justify='center', width=30)
+        self.confirmation_password = ttk.Entry(input_frame, justify='center', width=30)
 
-        self.lastname.pack(padx=300, pady= 5)
-        self.firstname.pack(pady= 5)
-        self.email.pack(pady= 5)
-        self.pseudo.pack(pady= 5)
-        self.password.pack(pady= 5)
-        self.confirmation_password.pack(pady= 5)
+        self.lastname.pack(padx=300, pady=5)
+        self.firstname.pack(pady=5)
+        self.email.pack(pady=5)
+        self.pseudo.pack(pady=5)
+        self.password.pack(pady=5)
+        self.confirmation_password.pack(pady=5)
 
         # Placeholder : 
         self.lastname.insert(0, 'Last name')
@@ -48,7 +51,7 @@ class Inscription():
         self.password.insert(0, 'Password')
         self.confirmation_password.insert(0, 'Confirm your password')
 
-        button = ttk.Button(input_frame, text="Inscription", command= lambda : self.check_validity_information())
+        button = ttk.Button(input_frame, text="Inscription", command=lambda: self.check_validity_information())
         button.pack(pady=25)
 
     def bind_input(self):
@@ -68,18 +71,23 @@ class Inscription():
     def click_lastname(self, arg):
         if str(self.lastname.get()) == 'Last name':
             self.lastname.delete(0, 'end')
+
     def click_firstname(self, arg):
         if str(self.firstname.get()) == 'First name':
             self.firstname.delete(0, 'end')
+
     def click_email(self, arg):
         if str(self.email.get()) == 'Email address':
             self.email.delete(0, 'end')
+
     def click_pseudo(self, arg):
         if str(self.pseudo.get()) == 'Nickname':
             self.pseudo.delete(0, 'end')
+
     def click_password(self, arg):
         if str(self.password.get()) == 'Password':
             self.password.delete(0, 'end')
+
     def click_confirm_password(self, arg):
         if str(self.confirmation_password.get()) == 'Confirm your password':
             self.confirmation_password.delete(0, 'end')
@@ -87,53 +95,60 @@ class Inscription():
     def leave_lastname(self, arg):
         if str(self.lastname.get()) == '':
             self.lastname.insert(0, 'Last name')
+
     def leave_firstname(self, arg):
         if str(self.firstname.get()) == '':
             self.firstname.insert(0, 'First name')
+
     def leave_email(self, arg):
         if str(self.email.get()) == '':
             self.email.insert(0, 'Email address')
+
     def leave_pseudo(self, arg):
         if str(self.pseudo.get()) == '':
             self.pseudo.insert(0, 'Nickname')
+
     def leave_password(self, arg):
         if str(self.password.get()) == '':
             self.password.insert(0, 'Password')
+
     def leave_confirm_password(self, arg):
         if str(self.confirmation_password.get()) == '':
             self.confirmation_password.insert(0, 'Confirm your password')
-
 
     def check_validity_information(self):
         if len(str(self.lastname.get())) >= 18:
             self.lastname.delete(0, 'end')
             self.lastname.insert(0, '18 characters max !!')
         else:
-            lastname = str(self.lastname.get())
+            self.valid_lastname = str(self.lastname.get())
 
         if len(str(self.firstname.get())) >= 18:
             self.firstname.delete(0, 'end')
             self.firstname.insert(0, '18 characters max !!')
         else:
-            firstname = str(self.lastname.get())
+            self.valid_firstname = str(self.lastname.get())
 
         if len(str(self.pseudo.get())) >= 18:
             self.pseudo.delete(0, 'end')
             self.pseudo.insert(0, '18 characters max !!')
         else:
-            pseudo = str(self.pseudo.get())
+            self.valid_pseudo = str(self.pseudo.get())
 
         if str(self.password.get()) != str(self.confirmation_password.get()):
             self.confirmation_password.delete(0, 'end')
             self.confirmation_password.insert(0, 'Passwords are different !')
         else:
             if self.check_validity_password(str(self.password.get())):
+                self.valid_password = self.password.get()
+                columns_name = ("first_name", "last_name", "nickname", "email", "password")
+                valid_info = (self.valid_firstname, self.valid_lastname, self.valid_pseudo, self.email.get(), self.valid_password)
+                self.database.insert_into_table("users", columns_name, valid_info)
                 print("Account created !!")
-
 
     def check_validity_password(self, check):
         error_value = True
-        special_char =['$', '@', '#', '%', '*', '&', '~', '§', '!', '?', '/', '>', '<', ',', ';', '.', ':', 'µ', '£']
+        special_char = ['$', '@', '#', '%', '*', '&', '~', '§', '!', '?', '/', '>', '<', ',', ';', '.', ':', 'µ', '£']
 
         if len(check) < 8:
             self.password.delete(0, 'end')
@@ -146,7 +161,7 @@ class Inscription():
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, 'Use uppercase also !')
             error_value = False
-            
+
         elif not re.search("[a-z]", check):
             self.password.delete(0, 'end')
             self.confirmation_password.delete(0, 'end')
@@ -158,11 +173,10 @@ class Inscription():
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, 'Enter a digit !')
             error_value = False
-            
+
         elif not any(char in special_char for char in check):
             self.password.delete(0, 'end')
             self.confirmation_password.delete(0, 'end')
             self.password.insert(0, 'Where is the special character !?')
             error_value = False
-
         return error_value

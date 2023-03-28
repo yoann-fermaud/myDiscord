@@ -1,4 +1,4 @@
-# from chatroom import Chatroom
+from chatroom import Chatroom
 from database import Database
 from settings import *
 
@@ -51,7 +51,7 @@ class Inscription:
         self.password.insert(0, 'Password')
         self.confirmation_password.insert(0, 'Confirm your password')
 
-        button = ttk.Button(input_frame, text="Inscription", command=lambda: self.check_validity_information())
+        button = ttk.Button(input_frame, text="Sign In", command=lambda: self.check_validity_information())
         button.pack(pady=25)
 
     def bind_input(self):
@@ -69,27 +69,27 @@ class Inscription:
         self.confirmation_password.bind("<FocusOut>", self.leave_confirm_password)
 
     def click_lastname(self, arg):
-        if str(self.lastname.get()) == 'Last name':
+        if str(self.lastname.get()) == 'Last name' or str(self.lastname.get()) == '18 characters max !!':
             self.lastname.delete(0, 'end')
 
     def click_firstname(self, arg):
-        if str(self.firstname.get()) == 'First name':
+        if str(self.firstname.get()) == 'First name'or str(self.firstname.get()) == '18 characters max !!':
             self.firstname.delete(0, 'end')
 
     def click_email(self, arg):
-        if str(self.email.get()) == 'Email address':
+        if str(self.email.get()) == 'Email address' or self.email.get() == 'Email already used !' or self.email.get() == "Invalid email !":
             self.email.delete(0, 'end')
 
     def click_pseudo(self, arg):
-        if str(self.pseudo.get()) == 'Nickname':
+        if str(self.pseudo.get()) == 'Nickname' or str(self.pseudo.get()) == '18 characters max !!':
             self.pseudo.delete(0, 'end')
 
     def click_password(self, arg):
-        if str(self.password.get()) == 'Password':
+        if str(self.password.get()) == 'Password' or self.password.get() == '8 characters minimum !' or self.password.get() == 'Use uppercase also !' or self.password.get() == 'Use lowercase also !' or self.password.get() == 'Enter a digit !' or self.password.get() == 'Where is the special character !?':
             self.password.delete(0, 'end')
 
     def click_confirm_password(self, arg):
-        if str(self.confirmation_password.get()) == 'Confirm your password':
+        if str(self.confirmation_password.get()) == 'Confirm your password' or self.confirmation_password.get() == "Passwords are different !":
             self.confirmation_password.delete(0, 'end')
 
     def leave_lastname(self, arg):
@@ -117,27 +117,48 @@ class Inscription:
             self.confirmation_password.insert(0, 'Confirm your password')
 
     def check_validity_information(self):
+        # Lastname : 
         if len(str(self.lastname.get())) >= 18:
             self.lastname.delete(0, 'end')
             self.lastname.insert(0, '18 characters max !!')
+            return False
         else:
             self.valid_lastname = str(self.lastname.get())
 
+        # Firstname : 
         if len(str(self.firstname.get())) >= 18:
             self.firstname.delete(0, 'end')
             self.firstname.insert(0, '18 characters max !!')
+            return False
         else:
             self.valid_firstname = str(self.lastname.get())
+
+        # Nickname
+        self.database.my_cursor.execute("USE my_discord")
+        self.database.my_cursor.execute("SELECT nickname FROM users")
+        results = self.database.my_cursor.fetchall()
+        list_nickname = []
+
+        for i in range(0, len(results)):
+            list_nickname.append(results[i][0])
+
+        if str(self.pseudo.get()) in list_nickname:
+            self.pseudo.delete(0, 'end')
+            self.pseudo.insert(0, 'Nickname already used !')
+            return False
 
         if len(str(self.pseudo.get())) >= 18:
             self.pseudo.delete(0, 'end')
             self.pseudo.insert(0, '18 characters max !!')
+            return False
         else:
             self.valid_pseudo = str(self.pseudo.get())
 
+        # Password
         if str(self.password.get()) != str(self.confirmation_password.get()):
             self.confirmation_password.delete(0, 'end')
             self.confirmation_password.insert(0, 'Passwords are different !')
+            return False
         else:
             if self.check_validity_password(self.password.get()) and self.check_validity_email(self.email.get()):
                 columns_name = ("first_name", "last_name", "nickname", "email", "password")
@@ -145,6 +166,8 @@ class Inscription:
                     self.valid_firstname, self.valid_lastname, self.valid_pseudo, self.valid_email, self.valid_password)
                 self.database.insert_into_table("users", columns_name, valid_info)
                 print("Account created !!")
+                Chatroom(self.win, self.valid_pseudo)
+
 
     def check_validity_email(self, check):
         self.database.my_cursor.execute("USE my_discord")
@@ -168,6 +191,7 @@ class Inscription:
         else:
             self.valid_email = check.lower()
             return self.valid_email
+
 
     def check_validity_password(self, check):
         # error_value = True
@@ -210,3 +234,10 @@ class Inscription:
 
         self.valid_password = check
         return self.valid_password
+    
+    # def encrypt_password(password, args):
+    # #     # password_encrypted = hashlib.sha256(str(password).encode('utf-8')).hexdigest()
+    #     password = str(password).encode("utf-8")
+    #     hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+    #     print(hashed_password)
+    #     return hashed_password

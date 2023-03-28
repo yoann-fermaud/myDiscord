@@ -37,9 +37,12 @@ class Database:
             print(f"    - {table[0]}")
 
     def open_file_sql(self):
-        with open('my_discord.sql') as f:
-            sql = f.read()
-        self.my_cursor.execute(sql)
+        try:
+            with open('my_discord.sql') as f:
+                sql = f.read()
+            self.my_cursor.execute(sql)
+        except mysql.connector.InternalError:
+            pass
 
     def close_all(self):
         self.my_cursor.close()

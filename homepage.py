@@ -26,10 +26,10 @@ class Homepage:
         button_frame = ttk.Frame(self.frame)
         button_frame.pack(pady=50)
 
-        inscription = ttk.Button(button_frame, text="Inscription", command=lambda:[self.clear_frame(), Inscription(self.win)])
+        inscription = ttk.Button(button_frame, text="Sign In", command=lambda:[self.clear_frame(), Inscription(self.win)])
         inscription.pack(side='left', padx=20)
 
-        connexion = ttk.Button(button_frame, text="Connexion", command=lambda:[self.clear_frame(), Connexion(self.win)])
+        connexion = ttk.Button(button_frame, text="Log In", command=lambda:[self.clear_frame(), Connexion(self.win)])
         connexion.pack(side='right', padx=20)
 
     def clear_frame(self):

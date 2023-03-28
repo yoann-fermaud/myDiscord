@@ -1,5 +1,5 @@
-# from database import Database
-# from chatroom import Chatroom
+from database import Database
+from chatroom import Chatroom
 from settings import *
 
 
@@ -9,7 +9,7 @@ class Connexion:
         self.win.geometry('800x600')
         self.win.title('myDiscord')
 
-        # self.database = Database()
+        self.database = Database()
         # self.database.create_my_discord()
 
         self.draw()
@@ -38,7 +38,7 @@ class Connexion:
         self.mdp_input.pack()
 
         # Placeholder :
-        self.pseudo_input.insert(0, 'Pseudo or email')
+        self.pseudo_input.insert(0, 'Pseudo')
         self.mdp_input.insert(0, 'Password')
 
         # self.hide_password = self.mdp_input.get()
@@ -50,8 +50,10 @@ class Connexion:
         # Button :
         button_frame = ttk.Frame(self.page_frame)
         button_frame.pack()
-        button = ttk.Button(button_frame, text="Connexion",
-                            command=lambda: [self.clear_frame(), Chatroom(self.win, "Yoann")])
+        # button = ttk.Button(button_frame, text="Connexion",
+        #                     command=lambda: self.check_validity(self.pseudo_input.get(), self.mdp_input.get()))
+        button = ttk.Button(button_frame, text="Log In",
+                            command=lambda: Chatroom(self.win, 'yoyo'))
         button.pack(pady=20)
 
     def clear_frame(self):
@@ -64,19 +66,19 @@ class Connexion:
         self.mdp_input.bind("<FocusOut>", self.leave_password)
 
     def click_pseudo(self, arg):
-        if str(self.pseudo_input.get()) == 'Pseudo or email':
+        if self.pseudo_input.get() == 'Pseudo':
             self.pseudo_input.delete(0, 'end')
 
     def click_password(self, arg):
-        if str(self.mdp_input.get()) == 'Password':
+        if self.mdp_input.get() == 'Password' or self.mdp_input.get() == 'Incorrect password':
             self.mdp_input.delete(0, 'end')
 
     def leave_pseudo(self, arg):
-        if str(self.pseudo_input.get()) == '':
-            self.pseudo_input.insert(0, 'Pseudo or email')
+        if self.pseudo_input.get() == '':
+            self.pseudo_input.insert(0, 'Pseudo')
 
     def leave_password(self, arg):
-        if str(self.mdp_input.get()) == '':
+        if self.mdp_input.get() == '':
             self.mdp_input.insert(0, 'Password')
 
     # def hide_password(self):
@@ -84,3 +86,31 @@ class Connexion:
     #     if str(self.mdp_input.get()) != "Password":
     #         self.mdp_input.config(show= "*")
     #         print(str(self.mdp_input.get()))
+
+    def check_validity(self, pseudo, password):
+        self.database.my_cursor.execute("USE my_discord")
+        self.database.my_cursor.execute("SELECT nickname FROM users")
+        results = self.database.my_cursor.fetchall()
+        list_pseudo = []
+
+        for i in range(0, len(results)):
+            list_pseudo.append(results[i][0])
+
+        print(list_pseudo)
+
+        if pseudo in list_pseudo:
+            self.database.my_cursor.execute(f"SELECT password FROM users WHERE nickname='{pseudo}'")
+            saved_password = self.database.my_cursor.fetchall()
+            saved_password = saved_password[0][0]
+
+            if password == saved_password:
+                self.clear_frame()
+                Chatroom(self.win, pseudo)
+            else:
+                self.mdp_input.delete(0, 'end')
+                self.mdp_input.insert(0, 'Incorrect password')
+        
+    # def encrypt_password(password, arg):
+    #     # password_encrypted = hashlib.sha256(str(password).encode('utf-8')).hexdigest()
+    #     print(password_encrypted)
+    #     return str(password_encrypted)

@@ -1,4 +1,4 @@
-import mysql.connector
+from src.settings import *
 
 
 class Database:
@@ -38,7 +38,7 @@ class Database:
 
     def open_file_sql(self):
         try:
-            with open('my_discord.sql') as f:
+            with open('sql/my_discord.sql') as f:
                 sql = f.read()
             self.my_cursor.execute(sql)
         except mysql.connector.InterfaceError:

@@ -1,5 +1,5 @@
-from database import Database
-from settings import *
+from src.database import Database
+from src.settings import *
 
 
 class Chatroom:
@@ -199,15 +199,6 @@ class Chatroom:
         exec("new_message = self.time_message_sent() + ' | ' + self.nickname + ' > ' + text_message")
         exec(f"self.sock.send(new_message.encode('utf-8'))")
         exec(f"self.input_area_{self.tab_selected()}.delete('1.0', 'end')")
-
-        # if self.tab_selected() == 1:
-        #     new_message = f"{self.time_message_sent()} | {self.nickname} > {self.input_area_1.get('1.0', 'end')}"
-        #     self.sock.send(new_message.encode('utf-8'))
-        #     self.input_area_1.delete('1.0', 'end')
-        # elif self.tab_selected() == 2:
-        #     new_message = f"{self.time_message_sent()} | {self.nickname} > {self.input_area_2.get('1.0', 'end')}"
-        #     self.sock.send(new_message.encode('utf-8'))
-        #     self.input_area_2.delete('1.0', 'end')
 
     def stop(self):
         self.running = False

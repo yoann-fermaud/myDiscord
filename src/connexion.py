@@ -1,6 +1,6 @@
-from database import Database
-from chatroom import Chatroom
-from settings import *
+from src.database import Database
+from src.chatroom import Chatroom
+from src.settings import *
 
 
 class Connexion:
@@ -43,13 +43,9 @@ class Connexion:
         # Button :
         button_frame = ttk.Frame(self.page_frame)
         button_frame.pack()
-        print('before connection')
-        print(self.mdp_input.get())
         
         button = ttk.Button(button_frame, text="Connexion",
-                            command=lambda: [print(type(self.mdp_input.get())), self.check_validity(self.pseudo_input.get(), self.mdp_input.get())])
-        # button = ttk.Button(button_frame, text="Log In",
-        #                     command=lambda: Chatroom(self.win, 'Yoann'))
+                            command=lambda: self.check_validity(self.pseudo_input.get(), self.mdp_input.get()))
 
         button.pack(pady=20)
 
@@ -106,4 +102,3 @@ class Connexion:
             else:
                 self.mdp_input.delete(0, 'end')
                 self.mdp_input.insert(0, 'Incorrect password')
-        

@@ -1,6 +1,6 @@
-from chatroom import Chatroom
-from database import Database
-from settings import *
+from src.chatroom import Chatroom
+from src.database import Database
+from src.settings import *
 
 
 class Inscription:

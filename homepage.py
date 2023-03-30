@@ -1,7 +1,7 @@
-from inscription import Inscription
-from connexion import Connexion
-from database import Database
-from settings import *
+from src.inscription import Inscription
+from src.connexion import Connexion
+from src.database import Database
+from src.settings import *
 
 
 class Homepage:
@@ -9,11 +9,10 @@ class Homepage:
         self.win = tk.Tk()
         self.win.geometry('800x600')
         self.win.title('myDiscord')
-
         self.database = Database()
-
+    
         # Theme import : 
-        self.win.tk.call('source', 'Tkinter_theme/forest-dark.tcl')
+        self.win.tk.call('source', 'assets/Tkinter_theme/forest-dark.tcl')
         ttk.Style().theme_use('forest-dark')
 
     def draw_homepage(self):
